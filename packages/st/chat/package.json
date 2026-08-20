@@ -1,0 +1,26 @@
+{
+  "name": "@deepseek-ai/dsh-st-chat",
+  "description": "SillyTavern chat management: conversations with swipeable response branches, message editing, chat branching",
+  "version": "0.1.0-rc.0",
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": { "types": "./lib/types/index.d.ts", "default": "./lib/index.js" },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-st-character": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-st-character": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  },
+  "files": ["lib/index.js", "lib/types/**/*.d.ts"]
+}

@@ -1,0 +1,453 @@
+/**
+ * SillyTavern World Info (lorebook) service — faithful port of ST's format
+ * and core activation engine.
+ *
+ * Files are `worlds/<name>.json` containing `{ name, entries: { [uid]: entry },
+ * extensions }`. Entry fields, defaults, and the selective-logic enum mirror
+ * ST's `newWorldInfoEntryDefinition` (public/scripts/world-info.js). The
+ * activation scan ports ST's checkWorldInfo core path: constant entries,
+ * primary/secondary key logic (AND_ANY / NOT_ALL / NOT_ANY / AND_ALL),
+ * recursive scanning, timed effects (sticky/cooldown/delay), probability,
+ * and token-budget insertion ordering.
+ *
+ * @module @deepseek-ai/dsh-st-lorebook
+ */
+import { Service } from '@deepseek-ai/cordis';
+import { readFile, writeFile, readdir, mkdir, unlink } from 'node:fs/promises';
+import { join, resolve, parse as parsePath } from 'node:path';
+import { existsSync } from 'node:fs';
+import { sanitizeFilename } from '@deepseek-ai/dsh-st-character';
+// ── ST enums (world-info.js) ───────────────────────────────────────────────
+/** Secondary-key logic enum; ST's world_info_logic. */
+export const world_info_logic = {
+    AND_ANY: 0,
+    NOT_ALL: 1,
+    NOT_ANY: 2,
+    AND_ALL: 3,
+};
+/** Entry insertion position enum; ST's world_info_position. */
+export const world_info_position = {
+    before: 0,
+    after: 1,
+    ANTop: 2,
+    ANBottom: 3,
+    atDepth: 4,
+    EMTop: 5,
+    EMBottom: 6,
+    outlet: 7,
+    sysTop: 800,
+    sysBottom: 801,
+    beforeChar: 1000,
+    afterChar: 1001,
+    EMTopKmp: 1002,
+    EMBottomKmp: 1003,
+};
+/** ST's DEFAULT_DEPTH for entries. */
+export const DEFAULT_DEPTH = 4;
+/** ST's DEFAULT_WEIGHT for grouped entries. */
+export const DEFAULT_WEIGHT = 100;
+/** Create an entry with ST's template defaults. */
+export function newWorldInfoEntry() {
+    return {
+        uid: 0,
+        key: [],
+        keysecondary: [],
+        comment: '',
+        content: '',
+        constant: false,
+        vectorized: false,
+        selective: true,
+        selectiveLogic: world_info_logic.AND_ANY,
+        addMemo: false,
+        order: 100,
+        position: world_info_position.before,
+        disable: false,
+        ignoreBudget: false,
+        excludeRecursion: false,
+        preventRecursion: false,
+        matchPersonaDescription: false,
+        matchCharacterDescription: false,
+        matchCharacterPersonality: false,
+        matchCharacterDepthPrompt: false,
+        matchScenario: false,
+        matchCreatorNotes: false,
+        delayUntilRecursion: 0,
+        probability: 100,
+        useProbability: true,
+        depth: DEFAULT_DEPTH,
+        outletName: '',
+        group: '',
+        groupOverride: false,
+        groupWeight: DEFAULT_WEIGHT,
+        scanDepth: null,
+        caseSensitive: null,
+        matchWholeWords: null,
+        useGroupScoring: null,
+        automationId: '',
+        role: 0,
+        sticky: null,
+        cooldown: null,
+        delay: null,
+        displayIndex: 0,
+    };
+}
+function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+/** Word-boundary matcher, port of ST's matchKeys join for whole words. */
+function containsKey(haystack, key, wholeWords, caseSensitive) {
+    const needle = caseSensitive ? key : key.toLowerCase();
+    const target = caseSensitive ? haystack : haystack.toLowerCase();
+    if (!needle)
+        return false;
+    if (!wholeWords)
+        return target.includes(needle);
+    // ST builds a regex of all keys joined with |; per-key equivalent:
+    const re = new RegExp(`(?:^|[^\\p{L}\\p{N}])${escapeRegex(needle)}(?:[^\\p{L}\\p{N}]|$)`, 'u');
+    return re.test(target);
+}
+/**
+ * Pick one entry from a same-group clash (ST's in-group priority):
+ * a groupOverride entry claims the group; otherwise vector-scored members
+ * compete on their shared best similarity (ST's useGroupScoring: the group
+ * aggregates scores from vectorized hits), and only unscored clashes fall
+ * to the groupWeight-weighted roll. Weights below 1 are treated as 1 so
+ * every entry can win.
+ */
+function pickGroupWinner(list, random, scores) {
+    const overrides = list.filter((i) => i.entry.groupOverride);
+    if (overrides.length > 0)
+        return overrides[0];
+    const scored = list
+        .map((item) => ({ item, score: scores?.get(`${item.world}#${item.entry.uid}`) }))
+        .filter((s) => s.score !== undefined);
+    if (scored.length > 0) {
+        const best = Math.max(...scored.map((s) => s.score));
+        const top = scored.filter((s) => s.score === best);
+        return top[Math.floor(random() * top.length)].item;
+    }
+    const total = list.reduce((sum, i) => sum + Math.max(1, i.entry.groupWeight), 0);
+    let roll = random() * total;
+    for (const item of list) {
+        roll -= Math.max(1, item.entry.groupWeight);
+        if (roll <= 0)
+            return item;
+    }
+    return list[list.length - 1];
+}
+/**
+ * Scan books against the chat context and return activated entries.
+ * Ports ST's primary path: constants first, key matching per message slice,
+ * secondary-key logic, recursion over activated content, probability roll,
+ * then sort by order for prompt assembly.
+ */
+export function scanWorldInfo(books, texts, options = {}) {
+    const random = options.random ?? Math.random;
+    const scanDepthMessages = options.scanDepthMessages ?? 2;
+    const caseSensitive = options.caseSensitive ?? false;
+    const wholeWordsDefault = options.matchWholeWords ?? true;
+    const maxRecursionSteps = options.maxRecursionSteps ?? 3;
+    const nowMs = options.nowMs ?? Date.now();
+    const timedState = options.timedState;
+    const vectorHits = options.vectorHits;
+    const tokenBudget = options.tokenBudget;
+    const allEntries = [];
+    for (const { name, file } of books) {
+        for (const entry of Object.values(file.entries)) {
+            allEntries.push({ world: name, entry });
+        }
+    }
+    const enabled = allEntries.filter(({ entry }) => !entry.disable);
+    const activated = new Map();
+    // Composite key: uids repeat across books, so a bare uid would drop entries
+    const activationOrder = [];
+    const matchesFor = (entry, text) => {
+        const cs = entry.caseSensitive ?? caseSensitive;
+        const ww = entry.matchWholeWords ?? wholeWordsDefault;
+        const primaries = entry.key.filter((k) => k.trim().length > 0);
+        const primaryHit = entry.constant || primaries.length === 0
+            ? true
+            : primaries.some((k) => containsKey(text, k, ww, cs));
+        if (!primaryHit) {
+            // Secondary keys alone can trigger when primary list is empty (ST: blue-light entries)
+            const secondaries = entry.keysecondary.filter((k) => k.trim().length > 0);
+            if (primaries.length === 0 && secondaries.length > 0) {
+                return secondaries.some((k) => containsKey(text, k, ww, cs));
+            }
+            return false;
+        }
+        // Primary hit (or constant): apply secondary-key logic
+        const secondaries = entry.keysecondary.filter((k) => k.trim().length > 0);
+        if (secondaries.length === 0 || !entry.selective)
+            return true;
+        switch (entry.selectiveLogic) {
+            case world_info_logic.AND_ANY:
+                return secondaries.some((k) => containsKey(text, k, ww, cs));
+            case world_info_logic.AND_ALL:
+                return secondaries.every((k) => containsKey(text, k, ww, cs));
+            case world_info_logic.NOT_ANY:
+                return !secondaries.some((k) => containsKey(text, k, ww, cs));
+            case world_info_logic.NOT_ALL:
+                return !secondaries.every((k) => containsKey(text, k, ww, cs));
+            default:
+                return true;
+        }
+    };
+    // Also scan the auxiliary texts the entry opted into
+    const auxiliaryText = (entry) => {
+        const parts = [];
+        if (entry.matchPersonaDescription && texts.personaDescription)
+            parts.push(texts.personaDescription);
+        if (entry.matchCharacterDescription && texts.characterDescription)
+            parts.push(texts.characterDescription);
+        if (entry.matchCharacterPersonality && texts.characterPersonality)
+            parts.push(texts.characterPersonality);
+        if (entry.matchCharacterDepthPrompt && texts.characterDepthPrompt)
+            parts.push(texts.characterDepthPrompt);
+        if (entry.matchScenario && texts.scenario)
+            parts.push(texts.scenario);
+        if (entry.matchCreatorNotes && texts.creatorNotes)
+            parts.push(texts.creatorNotes);
+        return parts.join('\n');
+    };
+    const tryActivate = (recursionStep, recursiveText) => {
+        for (const item of enabled) {
+            const { entry } = item;
+            const key = `${item.world}#${entry.uid}`;
+            if (activated.has(key))
+                continue;
+            if (entry.delayUntilRecursion > recursionStep)
+                continue;
+            // Non-recursable entries may only be activated by the chat text itself
+            if (recursionStep > 0 && entry.excludeRecursion)
+                continue;
+            if (texts.messageCount !== undefined && entry.delay !== null && texts.messageCount < entry.delay)
+                continue;
+            // Vectorized entries skip keyword matching entirely: they activate via
+            // their vector-similarity hit (constants stay always-on, as in ST)
+            if (entry.vectorized && !entry.constant) {
+                if (vectorHits?.get(key) !== undefined) {
+                    activated.set(key, item);
+                    activationOrder.push(key);
+                    timedState?.set(key, { at: nowMs, active: true });
+                }
+                continue;
+            }
+            const aux = auxiliaryText(entry);
+            // Per-entry scan depth overrides the global window on the chat portion
+            // (ST's scanDepth); recursion steps rescan only via the activated content
+            const chatWindow = texts.chatHistory.slice(-(entry.scanDepth ?? scanDepthMessages)).join('\n');
+            const scanText = recursionStep === 0 ? chatWindow : `${chatWindow}\n${recursiveText}`;
+            const matched = matchesFor(entry, scanText) || (aux.length > 0 && matchesFor(entry, `${scanText}\n${aux}`));
+            if (!matched)
+                continue;
+            if (entry.useProbability && entry.probability < 100 && random() * 100 > entry.probability)
+                continue;
+            const last = timedState?.get(key);
+            if (last !== undefined && !last.active && entry.cooldown !== null && nowMs - last.at < entry.cooldown)
+                continue;
+            activated.set(key, item);
+            activationOrder.push(key);
+            timedState?.set(key, { at: nowMs, active: true });
+        }
+    };
+    // Sticky window: entries activated within their sticky span stay active without matching
+    if (timedState !== undefined) {
+        for (const item of enabled) {
+            const { entry } = item;
+            if (entry.sticky === null)
+                continue;
+            const key = `${item.world}#${entry.uid}`;
+            const last = timedState.get(key);
+            if (last === undefined || !last.active || nowMs - last.at >= entry.sticky)
+                continue;
+            activated.set(key, item);
+            activationOrder.push(key);
+            timedState.set(key, { at: nowMs, active: true });
+        }
+    }
+    // Initial scan over the chat text
+    tryActivate(0, '');
+    // Recursive scans: activated content becomes scannable text, except from
+    // entries that prevent further recursion
+    for (let step = 1; step <= maxRecursionSteps; step++) {
+        const prevCount = activated.size;
+        const recursiveText = activationOrder
+            .map((key) => activated.get(key).entry)
+            .filter((e) => !e.preventRecursion)
+            .map((e) => e.content)
+            .join('\n');
+        tryActivate(step, recursiveText);
+        if (activated.size === prevCount)
+            break;
+    }
+    // Deactivation marks: an entry active in a previous scan that no longer
+    // activates starts its cooldown window from this scan (ST counts cooldown
+    // from deactivation). Group-coordinated suppression is not a deactivation,
+    // so marks are taken before the group pass.
+    if (timedState !== undefined) {
+        for (const [key, record] of timedState) {
+            if (record.active && !activated.has(key))
+                timedState.set(key, { at: nowMs, active: false });
+        }
+    }
+    // Group coordination (ST's in-group priority): same-group entries compete
+    // — a groupOverride winner claims the group, otherwise one entry is picked
+    // by a groupWeight-weighted roll; once any override winner is active, it
+    // suppresses activated entries from other groups unless they override too.
+    {
+        const byGroup = new Map();
+        for (const item of activated.values()) {
+            const group = item.entry.group;
+            if (group === '')
+                continue;
+            const list = byGroup.get(group) ?? [];
+            list.push(item);
+            byGroup.set(group, list);
+        }
+        let hasOverrideWinner = false;
+        for (const [, list] of byGroup) {
+            const winner = pickGroupWinner(list, random, vectorHits);
+            if (winner.entry.groupOverride)
+                hasOverrideWinner = true;
+            for (const item of list) {
+                if (item !== winner)
+                    activated.delete(`${item.world}#${item.entry.uid}`);
+            }
+        }
+        if (hasOverrideWinner) {
+            for (const [key, item] of activated) {
+                if (!item.entry.groupOverride)
+                    activated.delete(key);
+            }
+        }
+    }
+    // Order for prompt insertion: ST sorts by order, then position, then depth
+    let result = [...activated.values()].sort((a, b) => {
+        if (a.entry.order !== b.entry.order)
+            return a.entry.order - b.entry.order;
+        if (a.entry.position !== b.entry.position)
+            return a.entry.position - b.entry.position;
+        return a.entry.depth - b.entry.depth;
+    });
+    // Token budget: keep entries in insertion order until the budget is spent;
+    // ignoreBudget entries always ride along. Tokens are estimated at 4 chars
+    // per token (ST counts with its tokenizer; the estimate preserves ordering)
+    if (tokenBudget !== undefined) {
+        let used = 0;
+        result = result.filter(({ entry }) => {
+            if (entry.ignoreBudget)
+                return true;
+            const cost = Math.ceil(entry.content.length / 4);
+            if (used + cost > tokenBudget)
+                return false;
+            used += cost;
+            return true;
+        });
+    }
+    return result.map(({ world, entry }) => ({ world, entry }));
+}
+// ── Service definition ─────────────────────────────────────────────────────
+/**
+ * Convert a chara_card_v2 embedded `character_book` to the standalone
+ * `worlds/*.json` scan format; ST's conversion in `convertCharacterBook`.
+ * @param book - the card's embedded book.
+ * @returns a book with the standalone entry shape, keyed by entry id.
+ */
+export function bookFromCharacterBook(book) {
+    const entries = {};
+    book.entries.forEach((e, index) => {
+        const base = newWorldInfoEntry();
+        entries[String(e.id ?? index)] = {
+            ...base,
+            uid: e.id ?? index,
+            key: [...e.keys],
+            keysecondary: e.secondary_keys === undefined ? [] : [...e.secondary_keys],
+            comment: e.comment,
+            content: e.content,
+            constant: e.constant,
+            selective: e.selective,
+            order: e.insertion_order,
+            disable: !(e.enabled ?? true),
+            caseSensitive: e.case_sensitive ?? null,
+            position: e.position === 'after_char' ? world_info_position.afterChar : world_info_position.beforeChar,
+        };
+    });
+    return { name: book.name, entries };
+}
+/**
+ * SillyTavern World Info file service. CRUD over `worlds/*.json` in the
+ * ST-compatible layout, plus the activation scan for prompt assembly.
+ */
+export class StLorebookService extends Service {
+    constructor(ctx) {
+        super(ctx, 'stLorebook');
+    }
+}
+class StLorebookFileProvider extends StLorebookService {
+    worldsDir;
+    constructor(ctx, config) {
+        super(ctx);
+        this.worldsDir = resolve(config.dataRoot, 'worlds');
+    }
+    path(name) {
+        return join(this.worldsDir, `${sanitizeFilename(name)}.json`);
+    }
+    async ensureDir() {
+        if (!existsSync(this.worldsDir))
+            await mkdir(this.worldsDir, { recursive: true });
+    }
+    async list() {
+        if (!existsSync(this.worldsDir))
+            return [];
+        const files = (await readdir(this.worldsDir))
+            .filter((f) => f.toLowerCase().endsWith('.json'))
+            .sort((a, b) => a.localeCompare(b));
+        const rows = [];
+        for (const file of files) {
+            try {
+                const parsed = JSON.parse(await readFile(join(this.worldsDir, file), 'utf8'));
+                const id = parsePath(file).name;
+                rows.push({
+                    file_id: id,
+                    name: parsed.name || id,
+                    extensions: parsed.extensions && typeof parsed.extensions === 'object'
+                        ? parsed.extensions
+                        : {},
+                });
+            }
+            catch { /* skip unreadable books, same as ST's list */ }
+        }
+        return rows;
+    }
+    async get(name) {
+        if (!name)
+            return undefined;
+        const path = this.path(name);
+        if (!existsSync(path))
+            return undefined;
+        return JSON.parse(await readFile(path, 'utf8'));
+    }
+    async getOrDummy(name) {
+        return (await this.get(name)) ?? { entries: {} };
+    }
+    async save(name, file) {
+        await this.ensureDir();
+        await writeFile(this.path(name), JSON.stringify(file, null, 4), 'utf8');
+    }
+    async delete(name) {
+        const path = this.path(name);
+        if (existsSync(path))
+            await unlink(path);
+    }
+    async import(name, json) {
+        const parsed = JSON.parse(json);
+        const stored = parsed.name || name;
+        await this.save(stored, parsed);
+        return stored;
+    }
+}
+// ── Plugin entry ───────────────────────────────────────────────────────────
+export const name = 'st-lorebook-file';
+export default StLorebookFileProvider;
+//# sourceMappingURL=index.js.map

@@ -1,0 +1,23 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../../../vendor/cordis" },
+    { "path": "../../host/webserver" },
+    { "path": "../character" },
+    { "path": "../chat" },
+    { "path": "../group" },
+    { "path": "../instruct" },
+    { "path": "../lorebook" },
+    { "path": "../persona" },
+    { "path": "../regex" },
+    { "path": "../preset" },
+    { "path": "../generate" },
+    { "path": "../vector" },
+    { "path": "../api-config" }
+  ]
+}

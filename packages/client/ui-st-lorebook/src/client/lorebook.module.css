@@ -1,0 +1,266 @@
+.panel {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--dsh-st-bg, #1a1a2e);
+  color: var(--dsh-st-fg, #e8e8f0);
+}
+
+.globalBar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+}
+
+.globalTitle {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.books {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  flex: none;
+  border-right: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+}
+
+.booksHead,
+.entriesHead,
+.entriesFoot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.booksHead span,
+.entriesHead span {
+  margin-right: auto;
+  opacity: 0.7;
+}
+
+.bookRow,
+.bookRowActive,
+.entryRow,
+.entryRowActive {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+}
+
+.bookBtn,
+.entryBtn {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bookRow .bookBtn:hover,
+.entryRow .entryBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.bookRowActive .bookBtn,
+.entryRowActive .entryBtn {
+  background: var(--dsh-st-accent-dim, #37376b);
+}
+
+.activeTag {
+  color: gold;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  flex: none;
+  border-right: 1px solid var(--dsh-st-border, #2e2e48);
+  min-height: 0;
+}
+
+.entryList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.entriesFoot {
+  border-top: 1px solid var(--dsh-st-border, #2e2e48);
+  justify-content: flex-end;
+}
+
+.editor {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 640px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.number {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.input,
+.textarea {
+  padding: 8px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.miniBtn,
+.toolBtn,
+.primaryBtn {
+  padding: 4px 10px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.miniBtn {
+  border: none;
+  padding: 4px 8px;
+}
+
+.miniBtn:hover,
+.toolBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.miniBtn:disabled,
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.primaryBtn {
+  background: var(--dsh-st-accent-dim, #37376b);
+  border-color: transparent;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.hint {
+  margin: auto;
+  opacity: 0.6;
+  padding: 12px;
+}
+
+.offTag {
+  opacity: 0.5;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid #a33;
+  border-radius: 8px;
+  color: #f88;
+}
+
+.hitList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  font-size: 0.9em;
+}
+
+.hitMeta {
+  opacity: 0.6;
+  font-size: 0.85em;
+}
+
+.navBtn,
+.navBtnActive {
+  display: block;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.navBtn {
+  background: transparent;
+}
+
+.navBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.navBtnActive {
+  background: var(--dsh-st-accent-dim, #37376b);
+}

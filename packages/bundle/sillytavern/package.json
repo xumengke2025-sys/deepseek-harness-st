@@ -1,0 +1,68 @@
+{
+  "name": "@deepseek-ai/dsh-bundle-sillytavern",
+  "description": "The SillyTavern bundle: native Cordis ports of ST backend services (character, chat, lorebook, group, preset, generate, api) plus the React chat surface over the web-app bundle",
+  "version": "0.1.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "directory": "packages/bundle/sillytavern"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "cordis.patch.yml",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-st-api": "workspace:^",
+    "@deepseek-ai/dsh-st-api-config": "workspace:^",
+    "@deepseek-ai/dsh-st-character": "workspace:^",
+    "@deepseek-ai/dsh-st-chat": "workspace:^",
+    "@deepseek-ai/dsh-st-generate": "workspace:^",
+    "@deepseek-ai/dsh-st-group": "workspace:^",
+    "@deepseek-ai/dsh-st-instruct": "workspace:^",
+    "@deepseek-ai/dsh-st-lorebook": "workspace:^",
+    "@deepseek-ai/dsh-st-persona": "workspace:^",
+    "@deepseek-ai/dsh-st-regex": "workspace:^",
+    "@deepseek-ai/dsh-st-preset": "workspace:^",
+    "@deepseek-ai/dsh-st-vector": "workspace:^",
+    "@deepseek-ai/dsh-llm-openai": "workspace:^",
+    "@deepseek-ai/dsh-llm-anthropic": "workspace:^",
+    "@deepseek-ai/dsh-llm-openrouter": "workspace:^",
+    "@deepseek-ai/dsh-llm-ollama": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-chat": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-characters": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-lorebook": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-regex": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-settings": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-st-theme": "workspace:^"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis-plugin-loader": "workspace:^"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  }
+}

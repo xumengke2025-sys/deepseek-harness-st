@@ -1,0 +1,4 @@
+/** Host loader entry for the browser-only SillyTavern chat surface plugin. */
+/** Provides no host-side behavior; data services live in the `dsh-st-*` packages. */
+export function apply() { }
+//# sourceMappingURL=index.js.map

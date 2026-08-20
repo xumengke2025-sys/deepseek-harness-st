@@ -1,0 +1,148 @@
+# The SillyTavern surface: native Cordis ports of SillyTavern's backend
+# services plus the React chat surface. Applied as a layer over dsh-web-app,
+# which supplies the webserver, the browser roster, and the llm Service (with
+# the deepseek provider) from dsh-base.
+#
+# All services keep SillyTavern's on-disk layout under one dataRoot, so a
+# SillyTavern checkout and this bundle read and write the same characters/,
+# chats/, worlds/, groups/, and OpenAI Settings/ directories.
+
+- insert:
+    # ── LLM adapters for the ST API sources ─────────────────────────
+    # The deepseek adapter (OpenAI-compatible) is supplied by dsh-base/dsh-web-app;
+    # these register the remaining Phase A provider ids (openai / anthropic /
+    # openrouter / ollama). Each currently mounts a stub that fails loudly on a
+    # real model call; the 'custom' API source routes through llm-deepseek so
+    # OpenAI-compatible endpoints remain usable today.
+    - id: llm-openai
+      name: '@deepseek-ai/dsh-llm-openai'
+    - id: llm-anthropic
+      name: '@deepseek-ai/dsh-llm-anthropic'
+    - id: llm-openrouter
+      name: '@deepseek-ai/dsh-llm-openrouter'
+    - id: llm-ollama
+      name: '@deepseek-ai/dsh-llm-ollama'
+
+    # ── host: SillyTavern backend services ──────────────────────────────
+
+    # Character cards: PNG-embedded and JSON cards under <dataRoot>/characters/.
+    - id: st-character
+      name: '@deepseek-ai/dsh-st-character'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Chats with swipe alternates under <dataRoot>/chats/<avatar>/.
+    - id: st-chat
+      name: '@deepseek-ai/dsh-st-chat'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+        backupIntervalMs: 60000
+
+    # World books under <dataRoot>/worlds/.
+    - id: st-lorebook
+      name: '@deepseek-ai/dsh-st-lorebook'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Regex find-replace scripts under <dataRoot>/settings/regex.json,
+    # applied to prompt history (and mirrored on the client for display).
+    - id: st-regex
+      name: '@deepseek-ai/dsh-st-regex'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Persona library under <dataRoot>/personas/: one named user persona
+    # per JSON file; the client binds the active one per chat.
+    - id: st-persona
+      name: '@deepseek-ai/dsh-st-persona'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Instruct template library under <dataRoot>/instructs/: ST-format
+    # wrapper-sequence templates; generate resolves the active id at request
+    # time.
+    - id: st-instruct
+      name: '@deepseek-ai/dsh-st-instruct'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Group chats under <dataRoot>/groups/.
+    - id: st-group
+      name: '@deepseek-ai/dsh-st-group'
+      config:
+        root: !!js (process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user') + '/groups'
+
+    # Chat-completion presets under <dataRoot>/OpenAI Settings/.
+    - id: st-preset
+      name: '@deepseek-ai/dsh-st-preset'
+      config:
+        root: !!js (process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user') + '/OpenAI Settings'
+
+    # ST's API configuration panel (source / endpoint / key / model /
+    # streaming), persisted at <dataRoot>/api-config.json. st-generate reads
+    # this service to pick the active llm provider and model.
+    - id: st-api-config
+      name: '@deepseek-ai/dsh-st-api-config'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # Generation: ST macro engine + prompt assembly, streamed through ctx.llm.
+    # provider is the llm route llm-deepseek registers; model must exist on the
+    # configured endpoint ($DEEPSEEK_BASE_URL).
+    - id: st-generate
+      name: '@deepseek-ai/dsh-st-generate'
+      config:
+        provider: deepseek-official
+        model: deepseek-v4-flash
+
+    # Vector storage & Data Bank under `<dataRoot>/vectors/` and
+    # `<dataRoot>/user/files/`: local n-gram embeddings power vectorized
+    # World Info activation and document-chunk retrieval.
+    - id: st-vector
+      name: '@deepseek-ai/dsh-st-vector'
+      config:
+        dataRoot: !!js process.env.ST_DATA_ROOT ?? '.staging/sillytavern/data/default-user'
+
+    # HTTP endpoints under /api/st on the web-app webserver: characters,
+    # chats, worlds, models, and SSE generation for the browser panels.
+    - id: st-api
+      name: '@deepseek-ai/dsh-st-api'
+      config:
+        routePrefix: '/api/st'
+
+    # ── browser: the SillyTavern chat surface ───────────────────────────
+    #
+    # Registers the ST shell at priority -1 on the 'conversation' seat,
+    # shadowing ui-conversation's ConversationRoot: installing this bundle
+    # switches the web surface to SillyTavern, removing it restores the DSH
+    # chat. The shell declares the st.nav list and the keyed st.panel slots
+    # where later panel plugins (characters, lorebook, settings) register.
+    - id: ui-st-chat
+      name: '@deepseek-ai/dsh-client-ui-st-chat'
+
+    # Character card management panel in the st.panel 'characters' cell: card
+    # grid with select/create/import/rename/favourite/delete.
+    - id: ui-st-characters
+      name: '@deepseek-ai/dsh-client-ui-st-characters'
+
+    # World Info (lorebook) editor in the st.panel 'lorebook' cell: book
+    # picker, entry list, and entry editor over the st-lorebook service.
+    - id: ui-st-lorebook
+      name: '@deepseek-ai/dsh-client-ui-st-lorebook'
+
+    # Regex-script manager in the st.panel 'regex' cell: find-replace script
+    # list and editor over the st-api regex routes; saves notify the chat
+    # surface's display-side engine.
+    - id: ui-st-regex
+      name: '@deepseek-ai/dsh-client-ui-st-regex'
+
+    # Settings panel in the st.panel 'settings' cell: user persona, model
+    # selection, and preset management over the st-preset service.
+    - id: ui-st-settings
+      name: '@deepseek-ai/dsh-client-ui-st-settings'
+
+    # Theme panel in the st.panel 'theme' cell: a registry of color themes
+    # applied as --dsh-st-* custom properties on the document root and
+    # persisted in localStorage.
+    - id: ui-st-theme
+      name: '@deepseek-ai/dsh-client-ui-st-theme'

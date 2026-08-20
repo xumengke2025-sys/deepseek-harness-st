@@ -1,0 +1,251 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+}
+
+.toolbarGap {
+  flex: 1;
+}
+
+.spriteImg {
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--dsh-st-nav-bg, #16162a);
+}
+
+.noteBar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+}
+
+.noteArea {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-bg, #0d0d1c);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
+.select {
+  max-width: 240px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+}
+
+.smallBtn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.smallBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rowUser,
+.rowChar {
+  display: flex;
+  gap: 10px;
+  max-width: 86%;
+}
+
+.rowUser {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.rowChar {
+  align-self: flex-start;
+}
+
+.avatar {
+  width: 44px;
+  height: 66px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex: none;
+}
+
+.bubble {
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--dsh-st-bubble, #23233d);
+}
+
+.rowUser .bubble {
+  background: var(--dsh-st-bubble-user, #2c2a52);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.name {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.tools {
+  display: none;
+  gap: 2px;
+}
+
+.meta:hover .tools {
+  display: inline-flex;
+}
+
+.toolBtn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.7;
+}
+
+.body p {
+  margin: 0.35em 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.editBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editArea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
+.editActions {
+  display: flex;
+  gap: 6px;
+}
+
+.swipeBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--dsh-st-border, #2e2e48);
+}
+
+.swipeBtn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.swipeBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.swipeCount {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.error {
+  align-self: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #5c1f2e;
+  color: #ffd7de;
+  font-size: 0.85em;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 10px 12px;
+  border-top: 1px solid var(--dsh-st-border, #2e2e48);
+}
+
+.input {
+  flex: 1;
+  resize: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+}
+
+.input:disabled {
+  opacity: 0.5;
+}
+
+.sendBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--dsh-st-accent, #4a4a9c);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  flex: none;
+}
+
+.sendBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "deepseek-harness-st",
+  "private": true,
+  "type": "module",
+  "description": "SillyTavern integration for DeepSeek Harness: character cards, chats, world info, groups, presets, instruct templates, regex, vector retrieval, and the full ST chat surface — as installable Cordis plugin bundles.",
+  "scripts": {
+    "bundle:client": "pnpm --filter @deepseek-ai/dsh-client-ui-st-chat --filter @deepseek-ai/dsh-client-ui-st-characters --filter @deepseek-ai/dsh-client-ui-st-lorebook --filter @deepseek-ai/dsh-client-ui-st-regex --filter @deepseek-ai/dsh-client-ui-st-settings --filter @deepseek-ai/dsh-client-ui-st-theme run bundle"
+  },
+  "engines": {
+    "node": "^22.19 || >=24"
+  },
+  "packageManager": "pnpm@11.7.0"
+}

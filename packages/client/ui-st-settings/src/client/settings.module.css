@@ -1,0 +1,144 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px 24px;
+  overflow-y: auto;
+  background: var(--dsh-st-bg, #1a1a2e);
+  color: var(--dsh-st-fg, #e8e8f0);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 640px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1em;
+  opacity: 0.75;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+  padding-bottom: 6px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.presetBar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fileInput {
+  display: none;
+}
+
+.presetBar .input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input,
+.textarea {
+  padding: 8px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+input[type='range'] {
+  accent-color: var(--dsh-st-accent-dim, #37376b);
+}
+
+.toolBtn,
+.primaryBtn {
+  padding: 6px 12px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.toolBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.primaryBtn {
+  align-self: flex-start;
+  background: var(--dsh-st-accent-dim, #37376b);
+  border-color: transparent;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.error {
+  padding: 8px 12px;
+  border: 1px solid #a33;
+  border-radius: 8px;
+  color: #f88;
+  max-width: 640px;
+}
+
+.navBtn,
+.navBtnActive {
+  display: block;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.navBtn {
+  background: transparent;
+}
+
+.navBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.navBtnActive {
+  background: var(--dsh-st-accent-dim, #37376b);
+}

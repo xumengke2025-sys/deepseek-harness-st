@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../../../vendor/cordis" },
+    { "path": "../../llm/llm" },
+    { "path": "../character" },
+    { "path": "../chat" },
+    { "path": "../lorebook" },
+    { "path": "../api-config" },
+    { "path": "../../runtime-diagnostics/invariants" }
+  ]
+}

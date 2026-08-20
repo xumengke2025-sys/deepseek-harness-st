@@ -1,0 +1,11 @@
+node_modules/
+*.tsbuildinfo
+.pnpm-store/
+.env
+.DS_Store
+.idea/
+.vscode/
+# NOTE: lib/ is intentionally COMMITTED here (unlike upstream deepseek-harness):
+# GitHub installs skip the build step, so each package ships its built
+# lib/index.js (+ lib/client.js for browser panels) ready for the Cordis
+# loader to mount.

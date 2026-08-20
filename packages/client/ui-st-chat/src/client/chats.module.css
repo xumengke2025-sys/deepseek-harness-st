@@ -1,0 +1,150 @@
+.panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--dsh-st-bg, #1a1a2e);
+  color: var(--dsh-st-fg, #e8e8f0);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+}
+
+.count {
+  margin-right: auto;
+  opacity: 0.85;
+}
+
+.toolBtn,
+.toolBtnDisabled {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.toolBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.toolBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.toolBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--dsh-st-border, #2e2e48);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 8px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  color: inherit;
+  font: inherit;
+}
+
+.fileInput {
+  display: none;
+}
+
+.error {
+  margin: 8px 16px;
+  padding: 8px 12px;
+  border: 1px solid #7a2e3f;
+  border-radius: 8px;
+  background: #2e1a24;
+  color: #f0b8c8;
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row,
+.rowActive {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 10px;
+  background: var(--dsh-st-nav-bg, #16162a);
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.rowActive {
+  background: var(--dsh-st-accent-dim, #37376b);
+}
+
+.rowMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowMeta {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.rowActions {
+  display: flex;
+  gap: 4px;
+}
+
+.miniBtn {
+  padding: 3px 8px;
+  border: 1px solid var(--dsh-st-border, #2e2e48);
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.miniBtn:hover {
+  background: var(--dsh-st-hover, #26264a);
+}
+
+.empty {
+  margin: auto;
+  opacity: 0.7;
+}

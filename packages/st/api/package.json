@@ -1,0 +1,43 @@
+{
+  "name": "@deepseek-ai/dsh-st-api",
+  "description": "SillyTavern HTTP API over the DSH webServer: characters, chats, world info, regex scripts, and SSE reply generation under /api/st",
+  "version": "0.1.0-rc.0",
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": { "types": "./lib/types/index.d.ts", "default": "./lib/index.js" },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-host-webserver": "workspace:^",
+    "@deepseek-ai/dsh-st-character": "workspace:^",
+    "@deepseek-ai/dsh-st-chat": "workspace:^",
+    "@deepseek-ai/dsh-st-lorebook": "workspace:^",
+    "@deepseek-ai/dsh-st-vector": "workspace:^",
+    "@deepseek-ai/dsh-st-api-config": "workspace:^",
+    "@deepseek-ai/dsh-st-instruct": "workspace:^",
+    "@deepseek-ai/dsh-st-persona": "workspace:^",
+    "@deepseek-ai/dsh-st-regex": "workspace:^",
+    "@deepseek-ai/dsh-st-generate": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-host-webserver": "workspace:^",
+    "@deepseek-ai/dsh-st-character": "workspace:^",
+    "@deepseek-ai/dsh-st-chat": "workspace:^",
+    "@deepseek-ai/dsh-st-lorebook": "workspace:^",
+    "@deepseek-ai/dsh-st-vector": "workspace:^",
+    "@deepseek-ai/dsh-st-api-config": "workspace:^",
+    "@deepseek-ai/dsh-st-instruct": "workspace:^",
+    "@deepseek-ai/dsh-st-regex": "workspace:^",
+    "@deepseek-ai/dsh-st-generate": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  },
+  "files": ["lib/index.js", "lib/types/**/*.d.ts"]
+}
