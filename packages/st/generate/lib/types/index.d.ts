@@ -21,10 +21,19 @@ export interface MacroContext {
     user: string;
     /** Optional persona description. */
     persona?: string;
+    /**
+     * Mutable local-variable store (ST's chat_metadata.variables): `{{getvar::}}` reads it
+     * and `{{setvar::}}` writes it during substitution. The caller owns persistence —
+     * substitution mutates the object in place (ST's macro engine has the same side effect).
+     */
+    variables?: Record<string, string | number | boolean>;
 }
 /**
  * Substitute ST macros in text.
- * Covers the core set used by character cards and world info.
+ * Covers the core set used by character cards and world info, plus the
+ * chat-variable macros `{{getvar::name}}` / `{{setvar::name::value}}`
+ * (ST stores these in chat_metadata.variables; the caller supplies and owns
+ * the store, and setvar mutates it in place — ST's engine behaves the same).
  * @param text - template text containing `{{macro}}` placeholders.
  * @param ctx - macro values.
  * @returns text with macros substituted.
@@ -114,6 +123,12 @@ export interface AssemblePromptInput {
     namesBehavior?: 'none' | 'default' | 'completion' | 'content';
     /** ST's pin_examples: when false, example dialogues are placed AFTER history instead of before. */
     pinExamples?: boolean;
+    /**
+     * Mutable local-variable store (ST's chat_metadata.variables): `{{getvar::}}` reads it
+     * and `{{setvar::}}` writes it during assembly. The caller owns persistence —
+     * assembly mutates the object in place (ST's macro engine has the same side effect).
+     */
+    variables?: Record<string, string | number | boolean>;
     /** Max combined context tokens (system + messages); when set, oldest history rows are dropped until the assembled prompt fits (ST's openai_max_context). Trims within `historyLimit`'s window. */
     maxContextTokens?: number;
     /** Response token reservation subtracted from `maxContextTokens` (ST's completion token budget). */

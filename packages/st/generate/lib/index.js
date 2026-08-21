@@ -24,9 +24,14 @@ function dayTime() {
 	if (h < 18) return "afternoon";
 	return "evening";
 }
+/** ST's variable macros: `{{getvar::name}}` and `{{setvar::name::value}}` (variable-macros.js). */
+const VARIABLE_MACRO = /\{\{(getvar|setvar)::([^{}]+?)(?:::([^{}]*?))?\}\}/g;
 /**
 * Substitute ST macros in text.
-* Covers the core set used by character cards and world info.
+* Covers the core set used by character cards and world info, plus the
+* chat-variable macros `{{getvar::name}}` / `{{setvar::name::value}}`
+* (ST stores these in chat_metadata.variables; the caller supplies and owns
+* the store, and setvar mutates it in place — ST's engine behaves the same).
 * @param text - template text containing `{{macro}}` placeholders.
 * @param ctx - macro values.
 * @returns text with macros substituted.
@@ -50,7 +55,18 @@ function substituteMacros(text, ctx) {
 		charname: ctx.char,
 		username: ctx.user
 	};
-	return text.replace(/\{\{(\w+)\}\}/g, (whole, name) => {
+	return text.replace(VARIABLE_MACRO, (whole, kind, name, value) => {
+		const vars = ctx.variables;
+		if (vars === void 0) return whole;
+		if (kind === "getvar") {
+			const current = vars[name];
+			return current === void 0 ? "" : String(current);
+		}
+		if (value === void 0) return whole;
+		const num = Number(value);
+		vars[name] = value !== "" && !Number.isNaN(num) ? num : value;
+		return "";
+	}).replace(/\{\{(\w+)\}\}/g, (whole, name) => {
 		const value = map[name.toLowerCase()];
 		return value === void 0 ? whole : value;
 	});
@@ -225,7 +241,8 @@ function assemblePromptInner(input) {
 	const macroCtx = {
 		char: card.name,
 		user: userName,
-		...input.personaDescription === void 0 ? {} : { persona: input.personaDescription }
+		...input.personaDescription === void 0 ? {} : { persona: input.personaDescription },
+		...input.variables === void 0 ? {} : { variables: input.variables }
 	};
 	const systemRaw = input.systemPromptOverride ?? (card.data.system_prompt.length > 0 ? card.data.system_prompt : "Write {{char}}'s next reply in a fictional chat between {{char}} and {{user}}. Write 1 reply only in internet RP style, italicize actions, and avoid quotation marks. Use markdown. Be proactive, creative, and drive the plot and conversation forward. Write at least 1 paragraph, up to 4. Always stay in character and avoid repetition.");
 	const promptRows = (input.promptEntries ?? []).filter((e) => e.content.trim().length > 0);

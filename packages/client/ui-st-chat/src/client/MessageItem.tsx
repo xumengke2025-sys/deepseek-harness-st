@@ -33,9 +33,32 @@ function swipeId(message: StWireMessage): number {
   return message.swipe_id ?? 0
 }
 
+/** One rendered slice of a message body: plain text or a sandboxed HTML block. */
+type BodySegment = { kind: 'text'; text: string } | { kind: 'html'; html: string }
+
+/**
+ * Split a message body into text and HTML segments: ST's card-magic convention
+ * embeds rich widgets as ```html fenced blocks (Tavern Helper cards), which
+ * render in a sandboxed iframe instead of the text flow.
+ */
+function bodySegments(text: string): BodySegment[] {
+  const segments: BodySegment[] = []
+  const rest = stripExpressionMarks(text)
+  const fence = /```html\s*\n?([\s\S]*?)```/g
+  let cursor = 0
+  for (const match of rest.matchAll(fence)) {
+    const start = match.index ?? 0
+    if (start > cursor) segments.push({ kind: 'text', text: rest.slice(cursor, start) })
+    segments.push({ kind: 'html', html: match[1] ?? '' })
+    cursor = start + match[0].length
+  }
+  if (cursor < rest.length) segments.push({ kind: 'text', text: rest.slice(cursor) })
+  return segments
+}
+
 /** Render markdown-lite: paragraphs and line breaks only; full rendering lands with the theme pass. */
 function bodyLines(text: string): string[] {
-  return stripExpressionMarks(text).split(/\n{2,}/)
+  return text.split(/\n{2,}/)
 }
 
 /**
@@ -119,7 +142,17 @@ export function MessageItem(props: MessageItemProps) {
             )
           : (
               <div className={css.body}>
-                {bodyLines(props.displayMes ?? message.mes).map((para, i) => <p key={i}>{para}</p>)}
+                {bodySegments(props.displayMes ?? message.mes).map((seg, i) => seg.kind === 'html'
+                  ? (
+                      <iframe
+                        key={i}
+                        className={css.htmlFrame}
+                        sandbox="allow-scripts"
+                        srcDoc={seg.html}
+                        title={`富内容卡片 ${String(i + 1)}`}
+                      />
+                    )
+                  : bodyLines(seg.text).map((para, j) => <p key={`${String(i)}-${String(j)}`}>{para}</p>))}
               </div>
             )}
         {hasSwipes && !editing && (

@@ -26,9 +26,14 @@ function dayTime() {
         return 'afternoon';
     return 'evening';
 }
+/** ST's variable macros: `{{getvar::name}}` and `{{setvar::name::value}}` (variable-macros.js). */
+const VARIABLE_MACRO = /\{\{(getvar|setvar)::([^{}]+?)(?:::([^{}]*?))?\}\}/g;
 /**
  * Substitute ST macros in text.
- * Covers the core set used by character cards and world info.
+ * Covers the core set used by character cards and world info, plus the
+ * chat-variable macros `{{getvar::name}}` / `{{setvar::name::value}}`
+ * (ST stores these in chat_metadata.variables; the caller supplies and owns
+ * the store, and setvar mutates it in place — ST's engine behaves the same).
  * @param text - template text containing `{{macro}}` placeholders.
  * @param ctx - macro values.
  * @returns text with macros substituted.
@@ -54,7 +59,23 @@ export function substituteMacros(text, ctx) {
         charname: ctx.char,
         username: ctx.user,
     };
-    return text.replace(/\{\{(\w+)\}\}/g, (whole, name) => {
+    return text
+        .replace(VARIABLE_MACRO, (whole, kind, name, value) => {
+        const vars = ctx.variables;
+        if (vars === undefined)
+            return whole;
+        if (kind === 'getvar') {
+            const current = vars[name];
+            return current === undefined ? '' : String(current);
+        }
+        if (value === undefined)
+            return whole;
+        // setvar: number-looking values keep their numeric form, matching ST's typed values
+        const num = Number(value);
+        vars[name] = value !== '' && !Number.isNaN(num) ? num : value;
+        return '';
+    })
+        .replace(/\{\{(\w+)\}\}/g, (whole, name) => {
         const value = map[name.toLowerCase()];
         return value === undefined ? whole : value;
     });
@@ -256,7 +277,12 @@ export function assemblePrompt(input) {
 /** The budget-free assembly pass; see {@link assemblePrompt} for the trimming wrapper. */
 function assemblePromptInner(input) {
     const { card, messages, userName } = input;
-    const macroCtx = { char: card.name, user: userName, ...(input.personaDescription === undefined ? {} : { persona: input.personaDescription }) };
+    const macroCtx = {
+        char: card.name,
+        user: userName,
+        ...(input.personaDescription === undefined ? {} : { persona: input.personaDescription }),
+        ...(input.variables === undefined ? {} : { variables: input.variables }),
+    };
     const systemRaw = input.systemPromptOverride
         ?? (card.data.system_prompt.length > 0 ? card.data.system_prompt : DEFAULT_SYSTEM_PROMPT);
     // The prompt manager's depth-less system rows replace the main system

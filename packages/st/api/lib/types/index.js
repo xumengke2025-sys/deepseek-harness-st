@@ -789,6 +789,13 @@ const routes = {
         const authorsNoteDepth = typeof meta.note_depth === 'number' && meta.note_depth >= 0
             ? meta.note_depth
             : undefined;
+        // ST's chat variables (chat_metadata.variables): `{{getvar::}}` reads and
+        // `{{setvar::}}` writes this store during prompt assembly; mutations persist
+        // back to the chat (ST's saveMetadataDebounced). A missing store starts fresh.
+        const chatVariables = (meta.variables !== null && typeof meta.variables === 'object'
+            ? structuredClone(meta.variables)
+            : {});
+        const variablesBefore = JSON.stringify(chatVariables);
         // Regex scripts run on the prompt side only: USER_INPUT scripts rewrite
         // user rows, AI_OUTPUT scripts rewrite model rows, before assembly. The
         // display side is the client's mirror of the same engine.
@@ -853,6 +860,7 @@ const routes = {
                 ...(maxContextTokens === undefined || maxTokens === undefined ? {} : { maxResponseTokens: maxTokens }),
                 ...(model === undefined ? {} : { model }),
                 signal: disconnect.signal,
+                variables: chatVariables,
             }, { onDelta: (text) => send('delta', { text }) });
             // ST's impersonation post-processing: trim a leading `{{user}}:` label
             // the model may echo and surrounding whitespace (script.js's trimNames
@@ -863,6 +871,18 @@ const routes = {
                 reply = reply.replace(new RegExp(`^${label}:\\s*`), '').trim();
             }
             send('done', { reply });
+            // Persist chat variables mutated by {{setvar::}} during assembly (ST's
+            // saveMetadataDebounced); the SSE reply already went out, so a persist
+            // failure is logged rather than surfaced as a generation error.
+            if (JSON.stringify(chatVariables) !== variablesBefore) {
+                chat.header.chat_metadata = { ...chat.header.chat_metadata, variables: chatVariables };
+                try {
+                    await ctx.stChat.save(avatar, chatId, chat);
+                }
+                catch {
+                    // The model reply stands; only the variable mutation is lost.
+                }
+            }
         }
         catch (error) {
             send('error', { message: error.message });

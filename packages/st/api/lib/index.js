@@ -643,6 +643,8 @@ const routes = {
 		const meta = chat.header.chat_metadata;
 		const authorsNote = typeof meta.note_prompt === "string" && meta.note_prompt.length > 0 ? meta.note_prompt : void 0;
 		const authorsNoteDepth = typeof meta.note_depth === "number" && meta.note_depth >= 0 ? meta.note_depth : void 0;
+		const chatVariables = meta.variables !== null && typeof meta.variables === "object" ? structuredClone(meta.variables) : {};
+		const variablesBefore = JSON.stringify(chatVariables);
 		const regexScripts = await ctx.stRegex.list();
 		const sourceMessages = override ?? chat.messages;
 		const promptMessages = regexScripts.length === 0 ? sourceMessages : (() => {
@@ -700,13 +702,23 @@ const routes = {
 				...maxContextTokens === void 0 ? {} : { maxContextTokens },
 				...maxContextTokens === void 0 || maxTokens === void 0 ? {} : { maxResponseTokens: maxTokens },
 				...model === void 0 ? {} : { model },
-				signal: disconnect.signal
+				signal: disconnect.signal,
+				variables: chatVariables
 			}, { onDelta: (text) => send("delta", { text }) });
 			if (impersonationPrompt !== void 0) {
 				const label = (userNameOverride ?? chat.header.user_name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 				reply = reply.replace(new RegExp(`^${label}:\\s*`), "").trim();
 			}
 			send("done", { reply });
+			if (JSON.stringify(chatVariables) !== variablesBefore) {
+				chat.header.chat_metadata = {
+					...chat.header.chat_metadata,
+					variables: chatVariables
+				};
+				try {
+					await ctx.stChat.save(avatar, chatId, chat);
+				} catch {}
+			}
 		} catch (error) {
 			send("error", { message: error.message });
 		}

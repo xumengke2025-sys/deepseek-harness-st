@@ -249,3 +249,14 @@
   opacity: 0.45;
   cursor: default;
 }
+
+/* Rich HTML card widgets (ST card magic): sandboxed iframe rows. */
+.htmlFrame {
+  width: 100%;
+  height: 320px;
+  max-height: 60vh;
+  border: 1px solid var(--dsh-st-border, rgba(128, 128, 128, 0.35));
+  border-radius: 8px;
+  background: transparent;
+  margin: 4px 0;
+}

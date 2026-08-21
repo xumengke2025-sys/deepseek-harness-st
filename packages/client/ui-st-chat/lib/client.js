@@ -382,12 +382,12 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var st_shell_module_css_default = {
-			"missing": "QUvU8G_missing",
-			"navBtnActive": "QUvU8G_navBtnActive",
 			"surface": "QUvU8G_surface",
-			"shell": "QUvU8G_shell",
+			"navBtn": "QUvU8G_navBtn",
+			"navBtnActive": "QUvU8G_navBtnActive",
+			"missing": "QUvU8G_missing",
 			"nav": "QUvU8G_nav",
-			"navBtn": "QUvU8G_navBtn"
+			"shell": "QUvU8G_shell"
 		};
 		//#endregion
 		//#region src/client/StShell.tsx
@@ -450,7 +450,7 @@ window.__ModuleLoader__.load({
 		}
 		//#endregion
 		//#region \0dsh-css:D:\deepseek harness\packages\client\ui-st-chat\src\client\chat.module.css.mjs
-		const css$2 = ".V06-Ya_panel{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex}.V06-Ya_toolbar{border-bottom:1px solid var(--dsh-st-border,#2e2e48);align-items:center;gap:8px;padding:8px 12px;display:flex}.V06-Ya_toolbarGap{flex:1}.V06-Ya_spriteImg{object-fit:contain;background:var(--dsh-st-nav-bg,#16162a);border-radius:6px;width:36px;height:36px}.V06-Ya_noteBar{border-bottom:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);align-items:flex-end;gap:8px;padding:6px 12px;display:flex}.V06-Ya_noteArea{border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-bg,#0d0d1c);color:inherit;font:inherit;resize:vertical;border-radius:6px;flex:1;padding:6px 8px}.V06-Ya_select{border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);max-width:240px;color:inherit;font:inherit;border-radius:6px;padding:4px 8px}.V06-Ya_smallBtn{border:1px solid var(--dsh-st-border,#2e2e48);color:inherit;font:inherit;cursor:pointer;background:0 0;border-radius:6px;padding:4px 10px}.V06-Ya_smallBtn:disabled{opacity:.45;cursor:default}.V06-Ya_messages{flex-direction:column;flex:1;gap:14px;min-height:0;padding:16px;display:flex;overflow-y:auto}.V06-Ya_rowUser,.V06-Ya_rowChar{gap:10px;max-width:86%;display:flex}.V06-Ya_rowUser{flex-direction:row-reverse;align-self:flex-end}.V06-Ya_rowChar{align-self:flex-start}.V06-Ya_avatar{object-fit:cover;border-radius:6px;flex:none;width:44px;height:66px}.V06-Ya_bubble{background:var(--dsh-st-bubble,#23233d);border-radius:10px;min-width:0;padding:8px 12px}.V06-Ya_rowUser .V06-Ya_bubble{background:var(--dsh-st-bubble-user,#2c2a52)}.V06-Ya_meta{align-items:center;gap:8px;margin-bottom:2px;display:flex}.V06-Ya_name{opacity:.75;font-size:.85em}.V06-Ya_tools{gap:2px;display:none}.V06-Ya_meta:hover .V06-Ya_tools{display:inline-flex}.V06-Ya_toolBtn{color:inherit;cursor:pointer;opacity:.7;background:0 0;border:none;padding:0 4px}.V06-Ya_body p{white-space:pre-wrap;overflow-wrap:anywhere;margin:.35em 0}.V06-Ya_editBox{flex-direction:column;gap:6px;display:flex}.V06-Ya_editArea{box-sizing:border-box;border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);width:100%;color:inherit;font:inherit;resize:vertical;border-radius:6px;padding:6px}.V06-Ya_editActions{gap:6px;display:flex}.V06-Ya_swipeBar{border-top:1px dashed var(--dsh-st-border,#2e2e48);align-items:center;gap:8px;margin-top:6px;padding-top:4px;display:flex}.V06-Ya_swipeBtn{color:inherit;cursor:pointer;background:0 0;border:none;padding:0 6px}.V06-Ya_swipeBtn:disabled{opacity:.3;cursor:default}.V06-Ya_swipeCount{opacity:.7;font-size:.8em}.V06-Ya_error{color:#ffd7de;background:#5c1f2e;border-radius:6px;align-self:center;padding:6px 12px;font-size:.85em}.V06-Ya_composer{border-top:1px solid var(--dsh-st-border,#2e2e48);align-items:flex-end;gap:8px;padding:10px 12px;display:flex}.V06-Ya_input{resize:none;border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);color:inherit;font:inherit;border-radius:8px;flex:1;padding:8px 10px}.V06-Ya_input:disabled{opacity:.5}.V06-Ya_sendBtn{background:var(--dsh-st-accent,#4a4a9c);color:#fff;font:inherit;cursor:pointer;border:none;border-radius:8px;flex:none;padding:8px 16px}.V06-Ya_sendBtn:disabled{opacity:.45;cursor:default}";
+		const css$2 = ".V06-Ya_panel{flex-direction:column;flex:1;min-width:0;min-height:0;display:flex}.V06-Ya_toolbar{border-bottom:1px solid var(--dsh-st-border,#2e2e48);align-items:center;gap:8px;padding:8px 12px;display:flex}.V06-Ya_toolbarGap{flex:1}.V06-Ya_spriteImg{object-fit:contain;background:var(--dsh-st-nav-bg,#16162a);border-radius:6px;width:36px;height:36px}.V06-Ya_noteBar{border-bottom:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);align-items:flex-end;gap:8px;padding:6px 12px;display:flex}.V06-Ya_noteArea{border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-bg,#0d0d1c);color:inherit;font:inherit;resize:vertical;border-radius:6px;flex:1;padding:6px 8px}.V06-Ya_select{border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);max-width:240px;color:inherit;font:inherit;border-radius:6px;padding:4px 8px}.V06-Ya_smallBtn{border:1px solid var(--dsh-st-border,#2e2e48);color:inherit;font:inherit;cursor:pointer;background:0 0;border-radius:6px;padding:4px 10px}.V06-Ya_smallBtn:disabled{opacity:.45;cursor:default}.V06-Ya_messages{flex-direction:column;flex:1;gap:14px;min-height:0;padding:16px;display:flex;overflow-y:auto}.V06-Ya_rowUser,.V06-Ya_rowChar{gap:10px;max-width:86%;display:flex}.V06-Ya_rowUser{flex-direction:row-reverse;align-self:flex-end}.V06-Ya_rowChar{align-self:flex-start}.V06-Ya_avatar{object-fit:cover;border-radius:6px;flex:none;width:44px;height:66px}.V06-Ya_bubble{background:var(--dsh-st-bubble,#23233d);border-radius:10px;min-width:0;padding:8px 12px}.V06-Ya_rowUser .V06-Ya_bubble{background:var(--dsh-st-bubble-user,#2c2a52)}.V06-Ya_meta{align-items:center;gap:8px;margin-bottom:2px;display:flex}.V06-Ya_name{opacity:.75;font-size:.85em}.V06-Ya_tools{gap:2px;display:none}.V06-Ya_meta:hover .V06-Ya_tools{display:inline-flex}.V06-Ya_toolBtn{color:inherit;cursor:pointer;opacity:.7;background:0 0;border:none;padding:0 4px}.V06-Ya_body p{white-space:pre-wrap;overflow-wrap:anywhere;margin:.35em 0}.V06-Ya_editBox{flex-direction:column;gap:6px;display:flex}.V06-Ya_editArea{box-sizing:border-box;border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);width:100%;color:inherit;font:inherit;resize:vertical;border-radius:6px;padding:6px}.V06-Ya_editActions{gap:6px;display:flex}.V06-Ya_swipeBar{border-top:1px dashed var(--dsh-st-border,#2e2e48);align-items:center;gap:8px;margin-top:6px;padding-top:4px;display:flex}.V06-Ya_swipeBtn{color:inherit;cursor:pointer;background:0 0;border:none;padding:0 6px}.V06-Ya_swipeBtn:disabled{opacity:.3;cursor:default}.V06-Ya_swipeCount{opacity:.7;font-size:.8em}.V06-Ya_error{color:#ffd7de;background:#5c1f2e;border-radius:6px;align-self:center;padding:6px 12px;font-size:.85em}.V06-Ya_composer{border-top:1px solid var(--dsh-st-border,#2e2e48);align-items:flex-end;gap:8px;padding:10px 12px;display:flex}.V06-Ya_input{resize:none;border:1px solid var(--dsh-st-border,#2e2e48);background:var(--dsh-st-nav-bg,#16162a);color:inherit;font:inherit;border-radius:8px;flex:1;padding:8px 10px}.V06-Ya_input:disabled{opacity:.5}.V06-Ya_sendBtn{background:var(--dsh-st-accent,#4a4a9c);color:#fff;font:inherit;cursor:pointer;border:none;border-radius:8px;flex:none;padding:8px 16px}.V06-Ya_sendBtn:disabled{opacity:.45;cursor:default}.V06-Ya_htmlFrame{border:1px solid var(--dsh-st-border,#80808059);background:0 0;border-radius:8px;width:100%;height:320px;max-height:60vh;margin:4px 0}";
 		const tagId$2 = "@deepseek-ai/dsh-client-ui-st-chat/chat.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$2) + "]") === null) {
 			const tag = document.createElement("style");
@@ -460,34 +460,35 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var chat_module_css_default = {
-			"toolbar": "V06-Ya_toolbar",
-			"rowChar": "V06-Ya_rowChar",
-			"spriteImg": "V06-Ya_spriteImg",
-			"tools": "V06-Ya_tools",
-			"noteBar": "V06-Ya_noteBar",
-			"body": "V06-Ya_body",
-			"editActions": "V06-Ya_editActions",
-			"avatar": "V06-Ya_avatar",
-			"swipeBar": "V06-Ya_swipeBar",
-			"error": "V06-Ya_error",
-			"composer": "V06-Ya_composer",
-			"rowUser": "V06-Ya_rowUser",
-			"name": "V06-Ya_name",
-			"smallBtn": "V06-Ya_smallBtn",
-			"bubble": "V06-Ya_bubble",
-			"meta": "V06-Ya_meta",
-			"noteArea": "V06-Ya_noteArea",
 			"select": "V06-Ya_select",
-			"editBox": "V06-Ya_editBox",
-			"input": "V06-Ya_input",
-			"messages": "V06-Ya_messages",
+			"rowUser": "V06-Ya_rowUser",
+			"avatar": "V06-Ya_avatar",
 			"editArea": "V06-Ya_editArea",
-			"swipeBtn": "V06-Ya_swipeBtn",
-			"sendBtn": "V06-Ya_sendBtn",
-			"toolBtn": "V06-Ya_toolBtn",
-			"toolbarGap": "V06-Ya_toolbarGap",
 			"swipeCount": "V06-Ya_swipeCount",
-			"panel": "V06-Ya_panel"
+			"name": "V06-Ya_name",
+			"panel": "V06-Ya_panel",
+			"rowChar": "V06-Ya_rowChar",
+			"meta": "V06-Ya_meta",
+			"sendBtn": "V06-Ya_sendBtn",
+			"smallBtn": "V06-Ya_smallBtn",
+			"body": "V06-Ya_body",
+			"input": "V06-Ya_input",
+			"editBox": "V06-Ya_editBox",
+			"toolBtn": "V06-Ya_toolBtn",
+			"noteBar": "V06-Ya_noteBar",
+			"toolbar": "V06-Ya_toolbar",
+			"editActions": "V06-Ya_editActions",
+			"htmlFrame": "V06-Ya_htmlFrame",
+			"composer": "V06-Ya_composer",
+			"messages": "V06-Ya_messages",
+			"spriteImg": "V06-Ya_spriteImg",
+			"noteArea": "V06-Ya_noteArea",
+			"swipeBar": "V06-Ya_swipeBar",
+			"swipeBtn": "V06-Ya_swipeBtn",
+			"error": "V06-Ya_error",
+			"bubble": "V06-Ya_bubble",
+			"toolbarGap": "V06-Ya_toolbarGap",
+			"tools": "V06-Ya_tools"
 		};
 		//#endregion
 		//#region src/client/MessageItem.tsx
@@ -499,9 +500,37 @@ window.__ModuleLoader__.load({
 		function swipeId(message) {
 			return message.swipe_id ?? 0;
 		}
+		/**
+		* Split a message body into text and HTML segments: ST's card-magic convention
+		* embeds rich widgets as ```html fenced blocks (Tavern Helper cards), which
+		* render in a sandboxed iframe instead of the text flow.
+		*/
+		function bodySegments(text) {
+			const segments = [];
+			const rest = stripExpressionMarks(text);
+			const fence = /```html\s*\n?([\s\S]*?)```/g;
+			let cursor = 0;
+			for (const match of rest.matchAll(fence)) {
+				const start = match.index ?? 0;
+				if (start > cursor) segments.push({
+					kind: "text",
+					text: rest.slice(cursor, start)
+				});
+				segments.push({
+					kind: "html",
+					html: match[1] ?? ""
+				});
+				cursor = start + match[0].length;
+			}
+			if (cursor < rest.length) segments.push({
+				kind: "text",
+				text: rest.slice(cursor)
+			});
+			return segments;
+		}
 		/** Render markdown-lite: paragraphs and line breaks only; full rendering lands with the theme pass. */
 		function bodyLines(text) {
-			return stripExpressionMarks(text).split(/\n{2,}/);
+			return text.split(/\n{2,}/);
 		}
 		/**
 		* One message row with edit-in-place and swipe controls.
@@ -604,7 +633,12 @@ window.__ModuleLoader__.load({
 							})]
 						}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 							className: chat_module_css_default.body,
-							children: bodyLines(props.displayMes ?? message.mes).map((para, i) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", { children: para }, i))
+							children: bodySegments(props.displayMes ?? message.mes).map((seg, i) => seg.kind === "html" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("iframe", {
+								className: chat_module_css_default.htmlFrame,
+								sandbox: "allow-scripts",
+								srcDoc: seg.html,
+								title: `富内容卡片 ${String(i + 1)}`
+							}, i) : bodyLines(seg.text).map((para, j) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", { children: para }, `${String(i)}-${String(j)}`)))
 						}),
 						hasSwipes && !editing && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 							className: chat_module_css_default.swipeBar,
@@ -1494,24 +1528,24 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var chats_module_css_default = {
-			"searchBar": "_0WBYIq_searchBar",
 			"fileInput": "_0WBYIq_fileInput",
-			"toolbar": "_0WBYIq_toolbar",
-			"error": "_0WBYIq_error",
-			"toolBtn": "_0WBYIq_toolBtn",
-			"count": "_0WBYIq_count",
-			"list": "_0WBYIq_list",
-			"rowActions": "_0WBYIq_rowActions",
-			"rowName": "_0WBYIq_rowName",
-			"miniBtn": "_0WBYIq_miniBtn",
 			"empty": "_0WBYIq_empty",
-			"panel": "_0WBYIq_panel",
-			"toolBtnDisabled": "_0WBYIq_toolBtnDisabled",
+			"searchBar": "_0WBYIq_searchBar",
 			"rowMeta": "_0WBYIq_rowMeta",
+			"rowName": "_0WBYIq_rowName",
 			"rowActive": "_0WBYIq_rowActive",
 			"row": "_0WBYIq_row",
+			"error": "_0WBYIq_error",
+			"miniBtn": "_0WBYIq_miniBtn",
+			"count": "_0WBYIq_count",
 			"rowMain": "_0WBYIq_rowMain",
-			"searchInput": "_0WBYIq_searchInput"
+			"rowActions": "_0WBYIq_rowActions",
+			"toolBtnDisabled": "_0WBYIq_toolBtnDisabled",
+			"panel": "_0WBYIq_panel",
+			"toolbar": "_0WBYIq_toolbar",
+			"toolBtn": "_0WBYIq_toolBtn",
+			"searchInput": "_0WBYIq_searchInput",
+			"list": "_0WBYIq_list"
 		};
 		//#endregion
 		//#region src/client/ChatsPanel.tsx
@@ -1817,28 +1851,28 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var groups_module_css_default = {
-			"member": "KuIrdq_member",
-			"empty": "KuIrdq_empty",
-			"toolbar": "KuIrdq_toolbar",
-			"form": "KuIrdq_form",
-			"input": "KuIrdq_input",
-			"cardName": "KuIrdq_cardName",
-			"members": "KuIrdq_members",
-			"pickRow": "KuIrdq_pickRow",
-			"cardHead": "KuIrdq_cardHead",
 			"error": "KuIrdq_error",
-			"list": "KuIrdq_list",
-			"card": "KuIrdq_card",
-			"toolBtn": "KuIrdq_toolBtn",
 			"select": "KuIrdq_select",
 			"miniBtn": "KuIrdq_miniBtn",
-			"memberName": "KuIrdq_memberName",
-			"weight": "KuIrdq_weight",
-			"primaryBtn": "KuIrdq_primaryBtn",
-			"panel": "KuIrdq_panel",
 			"cardActive": "KuIrdq_cardActive",
+			"member": "KuIrdq_member",
+			"memberName": "KuIrdq_memberName",
+			"empty": "KuIrdq_empty",
+			"weight": "KuIrdq_weight",
+			"list": "KuIrdq_list",
+			"cardHead": "KuIrdq_cardHead",
+			"panel": "KuIrdq_panel",
 			"picker": "KuIrdq_picker",
-			"count": "KuIrdq_count"
+			"toolBtn": "KuIrdq_toolBtn",
+			"primaryBtn": "KuIrdq_primaryBtn",
+			"count": "KuIrdq_count",
+			"members": "KuIrdq_members",
+			"form": "KuIrdq_form",
+			"card": "KuIrdq_card",
+			"toolbar": "KuIrdq_toolbar",
+			"input": "KuIrdq_input",
+			"pickRow": "KuIrdq_pickRow",
+			"cardName": "KuIrdq_cardName"
 		};
 		//#endregion
 		//#region src/client/GroupsPanel.tsx

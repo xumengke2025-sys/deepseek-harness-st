@@ -10,9 +10,30 @@ import css from './chat.module.css';
 function swipeId(message) {
     return message.swipe_id ?? 0;
 }
+/**
+ * Split a message body into text and HTML segments: ST's card-magic convention
+ * embeds rich widgets as ```html fenced blocks (Tavern Helper cards), which
+ * render in a sandboxed iframe instead of the text flow.
+ */
+function bodySegments(text) {
+    const segments = [];
+    const rest = stripExpressionMarks(text);
+    const fence = /```html\s*\n?([\s\S]*?)```/g;
+    let cursor = 0;
+    for (const match of rest.matchAll(fence)) {
+        const start = match.index ?? 0;
+        if (start > cursor)
+            segments.push({ kind: 'text', text: rest.slice(cursor, start) });
+        segments.push({ kind: 'html', html: match[1] ?? '' });
+        cursor = start + match[0].length;
+    }
+    if (cursor < rest.length)
+        segments.push({ kind: 'text', text: rest.slice(cursor) });
+    return segments;
+}
 /** Render markdown-lite: paragraphs and line breaks only; full rendering lands with the theme pass. */
 function bodyLines(text) {
-    return stripExpressionMarks(text).split(/\n{2,}/);
+    return text.split(/\n{2,}/);
 }
 /**
  * One message row with edit-in-place and swipe controls.
@@ -34,7 +55,9 @@ export function MessageItem(props) {
     const hasSwipes = swipes !== undefined && swipes.length > 1;
     return (_jsxs("div", { className: message.is_user ? css.rowUser : css.rowChar, children: [!message.is_user && (_jsx("img", { className: css.avatar, src: props.avatarUrl, alt: message.name, draggable: false })), _jsxs("div", { className: css.bubble, children: [_jsxs("div", { className: css.meta, children: [_jsx("span", { className: css.name, children: message.name }), !props.locked && (_jsxs("span", { className: css.tools, children: [_jsx("button", { type: "button", className: css.toolBtn, title: "\u7F16\u8F91", onClick: () => { setEditing((v) => !v); }, children: "\u270E" }), _jsx("button", { type: "button", className: css.toolBtn, title: "\u6717\u8BFB", onClick: () => { speak(message.mes); }, children: "\uD83D\uDD0A" }), props.onBranch !== undefined && (_jsx("button", { type: "button", className: css.toolBtn, title: "\u4ECE\u6B64\u5904\u5206\u652F\uFF08\u4FDD\u5B58\u4E3A\u65B0\u804A\u5929\uFF09", onClick: props.onBranch, children: "\uD83C\uDF8B" })), _jsx("button", { type: "button", className: css.toolBtn, title: "\u5220\u9664", onClick: props.onDelete, children: "\uD83D\uDDD1" })] }))] }), editing
                         ? (_jsxs("div", { className: css.editBox, children: [_jsx("textarea", { ref: areaRef, className: css.editArea, value: draft, onChange: (e) => { setDraft(e.target.value); }, rows: Math.max(3, draft.split('\n').length) }), _jsxs("div", { className: css.editActions, children: [_jsx("button", { type: "button", className: css.smallBtn, onClick: () => { props.onEdit(draft); setEditing(false); }, children: "\u4FDD\u5B58" }), _jsx("button", { type: "button", className: css.smallBtn, onClick: () => { setEditing(false); }, children: "\u53D6\u6D88" })] })] }))
-                        : (_jsx("div", { className: css.body, children: bodyLines(props.displayMes ?? message.mes).map((para, i) => _jsx("p", { children: para }, i)) })), hasSwipes && !editing && (_jsxs("div", { className: css.swipeBar, children: [_jsx("button", { type: "button", className: css.swipeBtn, title: "\u4E0A\u4E00\u4E2A\u5019\u9009\u56DE\u590D", disabled: id === 0, onClick: () => { props.onSwipe(id - 1); }, children: "\u25C0" }), _jsxs("span", { className: css.swipeCount, children: [id + 1, " / ", swipes.length] }), _jsx("button", { type: "button", className: css.swipeBtn, title: "\u4E0B\u4E00\u4E2A\u5019\u9009\u56DE\u590D\uFF08\u672B\u5C3E\u65F6\u751F\u6210\u65B0\u7684\uFF09", onClick: () => {
+                        : (_jsx("div", { className: css.body, children: bodySegments(props.displayMes ?? message.mes).map((seg, i) => seg.kind === 'html'
+                                ? (_jsx("iframe", { className: css.htmlFrame, sandbox: "allow-scripts", srcDoc: seg.html, title: `富内容卡片 ${String(i + 1)}` }, i))
+                                : bodyLines(seg.text).map((para, j) => _jsx("p", { children: para }, `${String(i)}-${String(j)}`))) })), hasSwipes && !editing && (_jsxs("div", { className: css.swipeBar, children: [_jsx("button", { type: "button", className: css.swipeBtn, title: "\u4E0A\u4E00\u4E2A\u5019\u9009\u56DE\u590D", disabled: id === 0, onClick: () => { props.onSwipe(id - 1); }, children: "\u25C0" }), _jsxs("span", { className: css.swipeCount, children: [id + 1, " / ", swipes.length] }), _jsx("button", { type: "button", className: css.swipeBtn, title: "\u4E0B\u4E00\u4E2A\u5019\u9009\u56DE\u590D\uFF08\u672B\u5C3E\u65F6\u751F\u6210\u65B0\u7684\uFF09", onClick: () => {
                                     if (id < swipes.length - 1)
                                         props.onSwipe(id + 1);
                                     else
