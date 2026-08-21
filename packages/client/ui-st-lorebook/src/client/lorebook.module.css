@@ -7,6 +7,25 @@
   color: var(--dsh-st-fg, #e8e8f0);
 }
 
+/* Lorebook surface: the global-settings bar spans the top, the three-column
+ * work area sits below it (the Data Bank shares .panel with a flat row). */
+.panelColumn {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--dsh-st-bg, #1a1a2e);
+  color: var(--dsh-st-fg, #e8e8f0);
+}
+
+/* The three-column work area under the global-settings bar. */
+.main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
 .globalBar {
   display: flex;
   flex-direction: column;

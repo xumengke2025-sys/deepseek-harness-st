@@ -241,7 +241,7 @@ export function LorebookPanel({ useSt, api, actions }: StFaceProps) {
   }, [api, loadBooks, book, activeWorlds, actions])
 
   return (
-    <div className={css.panel}>
+    <div className={css.panelColumn}>
       <div className={css.globalBar}>
         <span className={css.globalTitle}>全局设置（ST 的 world_info_*，作用于所有启用世界书的扫描）</span>
         <div className={css.row}>
@@ -279,6 +279,7 @@ export function LorebookPanel({ useSt, api, actions }: StFaceProps) {
         </div>
       </div>
 
+      <div className={css.main}>
       <div className={css.books}>
         <div className={css.booksHead}>
           <span>世界书</span>
@@ -576,6 +577,7 @@ export function LorebookPanel({ useSt, api, actions }: StFaceProps) {
               </div>
             )}
         {error !== '' && <div className={css.error}>{error}</div>}
+      </div>
       </div>
     </div>
   )
