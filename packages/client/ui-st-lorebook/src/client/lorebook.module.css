@@ -150,7 +150,10 @@
 
 .row {
   display: flex;
-  gap: 16px;
+  /* Wrap instead of overflowing: the editor column (~372px at the default
+   * window) cannot hold three fixed-min-width fields on one line. */
+  flex-wrap: wrap;
+  gap: 12px 16px;
 }
 
 .check {
@@ -165,6 +168,9 @@
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  /* Below the flex base the input's intrinsic min-width would refuse to
+   * shrink and push siblings out of the column. */
+  min-width: 140px;
   font-size: 0.9em;
   opacity: 0.9;
 }
@@ -177,6 +183,17 @@
   background: var(--dsh-st-nav-bg, #16162a);
   color: inherit;
   font: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Inputs placed directly inside a row (next to a button) flex instead of
+ * claiming the full wrapped line. */
+.row > .input {
+  width: auto;
+  flex: 1;
+  min-width: 120px;
 }
 
 .textarea {
